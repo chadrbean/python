@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+import csv
+import os
+import multiprocessing 
+import json
+import time
+import uszipcode
+search = uszipcode.SearchEngine(simple_zipcode=True)
+
+pid_list = []
+
+
+def data_to_process():
+    with open("2010_census_city_county.csv", "r", encoding="mac-roman") as f:
+        csvr = csv.reader(f)
+        count_cdp = 0
+        all_records = []
+        for line in csvr:
+            final_dict = {}
+            
+            f_row = line[5].split("-")  
+            if len(f_row) > 1: 
+                state = f_row[0].strip()
+                final_dict.update({"state":state})
+        # Create City and County
+            g_row = line[6].split(",")
+            if len(g_row) > 1:
+                if "CDP" in g_row[0]:
+                    count_cdp += 1
+                    continue
+                else:
+                    city = g_row[0].strip()
+                    county = g_row[1].strip()
+                    final_dict.update({"city":city})
+                    final_dict.update({"county":county})
+                all_records.append(final_dict)
+        return all_records
+
+def workfunc(result):
+    with open("multi_proc_test.json", "a") as w: 
+        csvw = csv.writer(w)
+        out = search.by_city(result["city"])
+        global pid_list
+        pid_list.append(os.getpid())
+        
+        csvw.writerow(out)
+        
+        # json.dump(out, w)
+        # w.write("\n")
+        
+        # 
+        # print(process_id)
+        
+
+
+if __name__ == '__main__':
+    results = data_to_process()
+    for x in results:
+        pool = multiprocessing.Pool(3) #use all available cores, otherwise specify the number you want as an argument
+        result = pool.apply_async(workfunc, x)    # evaluate "f(10)" asynchronously
+    pool.close()
+    pool.join()
+    
+
+
