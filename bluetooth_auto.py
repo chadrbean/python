@@ -9,6 +9,7 @@ top = local["top"]
 tail = local["tail"]
 awk = local["awk"]
 
+pslist = ["brave", "vlc", "code", "joplin"]
 
 def getproc(psname):
     piddic = {}
@@ -22,7 +23,6 @@ def getproc(psname):
         return piddic
 
 def main():
-    pslist = ["brave", "vlc", "code", "joplin"]
     while True:
         for i in pslist:
             getpid = getproc(i)
@@ -35,5 +35,4 @@ def main():
                         print(i, pid, runcmd)
             except:
                 pass
-
 main()
