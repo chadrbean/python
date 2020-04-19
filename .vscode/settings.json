@@ -1,3 +1,7 @@
 {
-    "python.pythonPath": "/bin/python3.8"
+    "python.pythonPath": "/bin/python3",
+    "files.associations": {
+        "types.h": "c",
+        "unistd.h": "c"
+    }
 }
